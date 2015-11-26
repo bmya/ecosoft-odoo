@@ -20,17 +20,22 @@
 ##############################################################################
 
 from openerp.osv import fields, osv
+from openerp import fields as newfields, models, api
 
 
-class account_invoice_team(osv.osv):
+class account_invoice_team(models.Model):
 
     _name = "account.invoice.team"
-    _columns = {
-        'invoice_id': fields.many2one('account.invoice', 'Invoice', required=False, ondelete='cascade'),
-        'salesperson_id': fields.many2one('res.users', 'Salesperson', required=False),
-        'sale_team_id': fields.many2one('sale.team', 'Team', required=False),
-        'commission_rule_id': fields.many2one('commission.rule', 'Applied Commission', required=True, readonly=True),
-    }
+    
+    invoice_id = newfields.Many2one(
+        'account.invoice', 'Invoice', required=False, ondelete='cascade')
+    salesperson_id = newfields.Many2one(
+        'res.users', 'Salesperson', required=False)
+    sale_team_id = newfields.Many2one(
+        'sale.team', 'Team', required=False)
+    commission_rule_id = newfields.Many2one(
+        'commission.rule', 'Applied Commission', required=True, readonly=True)
+    
 
     def onchange_sale_team_id(self, cr, uid, ids, sale_team_id):
         result = {}
@@ -47,24 +52,25 @@ class account_invoice_team(osv.osv):
         result = {}
         res = {}
         if salesperson_id:
-            salesperson = self.pool.get('res.users').browse(cr, uid, salesperson_id)
+            salesperson = self.pool.get('res.users').browse(
+                cr, uid, salesperson_id)
             res['commission_rule_id'] = salesperson.commission_rule_id.id
             res['sale_team_id'] = False
 
         result['value'] = res
         return result
 
-account_invoice_team()
 
-
-class account_invoice(osv.osv):
+class account_invoice(models.Model):
 
     _inherit = "account.invoice"
-    _columns = {
-        'sale_team_ids': fields.one2many('account.invoice.team', 'invoice_id', 'Teams', states={'draft': [('readonly', False)]}),
-        'worksheet_id': fields.many2one('commission.worksheet', 'Commission Worksheet', readonly=True)
-    }
-
+    
+    sale_team_ids = newfields.One2many(
+        'account.invoice.team', 'invoice_id', 'Teams',
+        states={'draft': [('readonly', False)]})
+    worksheet_id = newfields.Many2one(
+        'commission.worksheet', 'Commission Worksheet', readonly=True)
+    
     def _get_salesperson_comm(self, cr, uid, user_id):
         salesperson_recs = []
         if user_id:
@@ -139,7 +145,5 @@ class account_invoice(osv.osv):
             if line_ids:
                 self.pool.get('commission.worksheet.line').update_commission_line_status(cr, uid, line_ids, context=context)
         return res
-
-account_invoice()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

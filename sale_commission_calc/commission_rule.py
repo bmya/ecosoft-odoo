@@ -40,8 +40,10 @@ class commission_rule(models.Model):
     fix_percent = newfields.Float('Fix Percentage')
     rule_rates = newfields.One2many(
         'commission.rule.rate', 'commission_rule_id', 'Rates')
-    rule_conditions = newfields.One2many(
-        'commission.rule.condition', 'commission_rule_id', 'Conditions')
+    # comentado para ver si cambia el error
+    # rule_conditions = newfields.One2many(
+    #    'commission.rule.condition', 'commission_rule_id', 'Conditions')
+    rule_conditions = newfields.Integer('Conditions')
     active = newfields.Boolean('Active', default=True)
     sale_team_ids = newfields.One2many(
         'sale.team', 'commission_rule_id', 'Teams')

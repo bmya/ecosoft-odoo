@@ -246,22 +246,47 @@
         </record>        
 
         <!-- Worksheet -->
-        <menuitem name="Commission Calc" id="menu_commission_calc" parent="base.menu_base_partner" groups="sale_commission_calc.group_sale_commission_calc_sale"/>
+        <menuitem 
+            name="Commission Calc" id="menu_commission_calc" 
+            parent="base.menu_base_partner" 
+            groups="sale_commission_calc.group_sale_commission_calc_sale"/>
         
-        <menuitem name="Salesperson Worksheet" id="menu_user_commission_worksheet" parent="menu_commission_calc" 
-            action="action_user_commission_worksheet_form"  sequence="10" groups="sale_commission_calc.group_sale_commission_calc_sale"/> 
-        <menuitem name="Team Worksheet" id="menu_team_commission_worksheet" parent="menu_commission_calc" 
-            action="action_team_commission_worksheet_form"  sequence="20" groups="sale_commission_calc.group_sale_commission_calc_user"/>  
+        <menuitem
+            name="Salesperson Worksheet" id="menu_user_commission_worksheet"
+            parent="menu_commission_calc" 
+            action="action_user_commission_worksheet_form"
+            sequence="10" groups="sale_commission_calc.group_sale_commission_calc_sale"/>
+
+        <menuitem 
+            name="Team Worksheet" 
+            id="menu_team_commission_worksheet"
+            parent="menu_commission_calc" 
+            action="action_team_commission_worksheet_form"
+            sequence="20"
+            groups="sale_commission_calc.group_sale_commission_calc_user"/>  
         
         <!-- Config -->
-        <menuitem name="Configuration" id="menu_commission_calc_config" parent="menu_commission_calc" sequence="100"
-        	groups="sale_commission_calc.group_sale_commission_calc_user" />
+        <menuitem
+            name="Configuration" id="menu_commission_calc_config"
+            parent="menu_commission_calc"
+            sequence="100" 
+            groups="sale_commission_calc.group_sale_commission_calc_user" />
 
-        <menuitem name="Salespersons" id="menu_salesperson_commission_rule" parent="menu_commission_calc_config" 
-            action="action_salesperson_commission_rule" sequence="20" groups="sale_commission_calc.group_sale_commission_calc_user"/>          
-        <menuitem name="Sale Teams" id="menu_sale_team" parent="menu_commission_calc_config"
-            action="action_sale_team_form" sequence="30" groups="sale_commission_calc.group_sale_commission_calc_user"/>        
+        <menuitem 
+            name="Salespersons"
+            id="menu_salesperson_commission_rule"
+            parent="menu_commission_calc_config" 
+            action="action_salesperson_commission_rule"
+            sequence="20"
+            groups="sale_commission_calc.group_sale_commission_calc_user"/>
 
+        <menuitem
+            name="Sale Teams"
+            id="menu_sale_team"
+            parent="menu_commission_calc_config"
+            action="action_sale_team_form"
+            sequence="30"
+            groups="sale_commission_calc.group_sale_commission_calc_user"/>        
 
     </data>
 </openerp>
