@@ -18,51 +18,57 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import time
 from openerp.osv import fields, osv
+from openerp import fields as newfields, models, api
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
 
 # Define the due date available for any commission rule
-LAST_PAY_DATE_RULE = [('invoice_duedate', 'Invoice Due Date (default)'),
-                      ('invoice_date_plus_cust_payterm', 'Invoice Date + Customer Payment Term')]
+LAST_PAY_DATE_RULE = [
+    ('invoice_duedate', 'Invoice Due Date (default)'),
+    ('invoice_date_plus_cust_payterm', 'Invoice Date + Customer Payment Term')]
 
-COMMISSION_LINE_STATE = [('draft', 'Not Ready'),
-                          ('valid', 'Ready'),
-                          ('invalid', 'Invalid'),
-                          ('done', 'Done'),
-                          ('skip', 'Skipped')]
+COMMISSION_LINE_STATE = [
+    ('draft', 'Not Ready'), ('valid', 'Ready'), ('invalid', 'Invalid'),
+    ('done', 'Done'), ('skip', 'Skipped')]
 
 
-class sale_team(osv.osv):
+class sale_team(models.Model):
 
     _name = "sale.team"
     _description = "Sales Team"
-    _columns = {
-        'name': fields.char('Name', size=64, required=True),
-        'commission_rule_id': fields.many2one('commission.rule', 'Commission Rule', required=False),
-        'users': fields.many2many('res.users', 'sale_team_users_rel', 'tid', 'uid', 'Users'),
-        'implied_ids': fields.many2many('sale.team', 'sale_team_implied_rel', 'tid', 'hid',
-            string='Inherits', help='Users of this group automatically inherit those groups'),
-        'require_paid': fields.boolean('Require Paid Invoice', help='Require invoice to be paid in full amount.'),
-        'require_posted': fields.boolean('Require Payment Detail Posted', help='Require that all payment detail related to payments to invoice has been posted.'),
-        'allow_overdue': fields.boolean('Allow overdue payment', help='Allow paying commission with overdue payment.'),
-        'last_pay_date_rule': fields.selection(LAST_PAY_DATE_RULE, 'Last Pay Date Rule'),
-        'buffer_days': fields.integer('Buffer Days', help="Additional days after last payment date to be eligible for commission.")
-    }
-    _defaults = {
-        'require_paid': False,
-        'require_posted': False,
-        'allow_overdue': False,
-        'buffer_days': 0,
-    }
+    
+    name = newfields.Char('Name', size=64, required=True)
+    commission_rule_id = newfields.Many2one(
+        'commission.rule', 'Commission Rule', required=False)
+    users = newfields.Many2many(
+        'res.users', 'sale_team_users_rel', 'tid', 'uid', 'Users')
+    implied_ids = newfields.Many2many(
+        'sale.team', 'sale_team_implied_rel', 'tid', 'hid', string='Inherits',
+        help='Users of this group automatically inherit those groups')
+    require_paid = newfields.Boolean(
+        'Require Paid Invoice',
+        help='Require invoice to be paid in full amount.', default=False)
+    require_posted = newfields.Boolean(
+        'Require Payment Detail Posted',
+        help='''Require that all payment detail related to payments to invoice 
+has been posted.''', default=False)
+    allow_overdue = newfields.Boolean(
+        'Allow overdue payment', help='''Allow paying commission with overdue 
+payment.''', default=False)
+    last_pay_date_rule = newfields.Selection(
+        LAST_PAY_DATE_RULE, 'Last Pay Date Rule')
+    buffer_days = newfields.Integer(
+        'Buffer Days', help='''Additional days after last payment date to be
+eligible for commission.''', default=0)
+
     _sql_constraints = [
         ('name_uniq', 'unique (name)', 'The name of the team must be unique !')
     ]
-
-sale_team()
 
 
 class commission_worksheet(osv.osv):
@@ -780,27 +786,28 @@ class commission_worksheet_line(osv.osv):
 #         self.update_commission_line_status(cr, uid, ids, context=context)
 #         return res
 
+
 commission_worksheet_line()
 
 
-class res_users(osv.osv):
+class res_users(models.Model):
 
     _inherit = "res.users"
-    _columns = {
-        'commission_rule_id': fields.many2one('commission.rule', 'Applied Commission', required=False, readonly=False),
-        'require_paid': fields.boolean('Require Paid Invoice', help='Require invoice to be paid in full amount.'),
-        'require_posted': fields.boolean('Require Payment Detail Posted', help='Require that all payment detail related to payments to invoice has been posted.'),
-        'allow_overdue': fields.boolean('Allow Overdue Payment', help='Allow paying commission with overdue payment.'),
-        'last_pay_date_rule': fields.selection(LAST_PAY_DATE_RULE, 'Last Pay Date Rule'),
-        'buffer_days': fields.integer('Buffer Days')
-    }
-    _defaults = {
-        'require_paid': False,
-        'require_posted': False,
-        'allow_overdue': False,
-        'buffer_days': 0,
-    }
-
-res_users()
+    commission_rule_id = newfields.Many2one(
+        'commission.rule', 'Applied Commission',
+        required=False, readonly=False)
+    require_paid = newfields.Boolean(
+        'Require Paid Invoice',
+        help='Require invoice to be paid in full amount.', default=False)
+    require_posted = newfields.Boolean(
+        'Require Payment Detail Posted',
+        help='''Require that all payment detail related to payments to invoice
+has been posted.''', default=False)
+    allow_overdue = newfields.Boolean(
+        'Allow Overdue Payment', default=False, 
+        help='''Allow paying commission with overdue payment.''')
+    last_pay_date_rule = newfields.Selection(
+        LAST_PAY_DATE_RULE, 'Last Pay Date Rule')
+    buffer_days = newfields.Integer('Buffer Days', default=0)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
