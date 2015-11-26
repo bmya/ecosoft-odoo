@@ -212,7 +212,7 @@ class account_billing(osv.osv):
                 if billing.company_id.currency_id.id == billing.payment_rate_currency_id.id:
                     rate =  1 / billing.payment_rate
                 else:
-                    ctx = context.copy()
+                    ctx = dict(context.copy())
                     ctx.update({'date': billing.date})
                     billing_rate = self.browse(cr, uid, billing.id, context=ctx).currency_id.rate
                     company_currency_rate = billing.company_id.currency_id.rate
@@ -453,7 +453,7 @@ class account_billing(osv.osv):
 #        return default
 
     def onchange_rate(self, cr, uid, ids, rate, amount, currency_id, payment_rate_currency_id, company_id, context=None):
-        res =  {'value': {'paid_amount_in_company_currency': amount}}
+        res =  dict({'value': {'paid_amount_in_company_currency': amount}})
         company_currency = self.pool.get('res.company').browse(cr, uid, company_id, context=context).currency_id
         if rate and amount and currency_id:# and currency_id == payment_rate_currency_id:
             billing_rate = self.pool.get('res.currency').browse(cr, uid, currency_id, context).rate
@@ -499,7 +499,9 @@ class account_billing(osv.osv):
                     break
         res = self.onchange_rate(cr, uid, ids, payment_rate, amount, currency_id, payment_rate_currency_id, company_id, context=ctx)
         for key in res.keys():
+            vals[key]=dict(vals[key])
             vals[key].update(res[key])
+        vals['value']=dict(vals['value'])
         vals['value'].update({'payment_rate': payment_rate})
         if payment_rate_currency_id:
             vals['value'].update({'payment_rate_currency_id': payment_rate_currency_id})
@@ -509,6 +511,9 @@ class account_billing(osv.osv):
         if context is None:
             context = {}
         # Additional Condition for Matching Billing Date
+        # Nota de Daniel Blanco: convierto el diccionario frozen dict a comun para evitar el error
+        # "not implemented"
+        context = dict(context)
         context.update({'billing_date_condition': ['|',('date_maturity', '=', False),('date_maturity', '<=', date)]})
         if not journal_id:
             return {}
