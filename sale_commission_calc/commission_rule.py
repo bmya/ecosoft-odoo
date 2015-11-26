@@ -19,48 +19,48 @@
 #
 ##############################################################################
 from openerp.osv import fields, osv
+from openerp import fields as newfields, models, api
 
 # Available commission rule
-COMMISSION_RULE = [('percent_fixed', 'Fixed Commission Rate'),
-                      ('percent_product_category', 'Product Category Commission Rate'),
-                      ('percent_product', 'Product Commission Rate'),
-                      ('percent_product_step', 'Product Commission Rate Steps'),
-                      ('percent_amount', 'Commission Rate By Order Amount')]
+COMMISSION_RULE = [
+    ('percent_fixed', 'Fixed Commission Rate'),
+    ('percent_product_category', 'Product Category Commission Rate'),
+    ('percent_product', 'Product Commission Rate'),
+    ('percent_product_step', 'Product Commission Rate Steps'),
+    ('percent_amount', 'Commission Rate By Order Amount')]
 
 
-class commission_rule(osv.osv):
+class commission_rule(models.Model):
 
     _name = "commission.rule"
     _description = "Commission Rule"
-    _columns = {
-        'name': fields.char('Name', size=64, required=True),
-        'type': fields.selection(COMMISSION_RULE, 'Type', required=True),
-        'fix_percent': fields.float('Fix Percentage'),
-        'rule_rates': fields.one2many('commission.rule.rate', 'commission_rule_id', 'Rates'),
-        'rule_conditions': fields.one2many('commission.rule.condition', 'commission_rule_id', 'Conditions'),
-        'active': fields.boolean('Active'),
-        'sale_team_ids': fields.one2many('sale.team', 'commission_rule_id', 'Teams'),
-        'salesperson_ids': fields.one2many('res.users', 'commission_rule_id', 'Salesperson'),
-    }
-    _defaults = {
-        'active': True
-    }
 
-commission_rule()
+    name = newfields.Char('Name', size=64, required=True)
+    type = newfields.Selection(COMMISSION_RULE, 'Type', required=True)
+    fix_percent = newfields.Float('Fix Percentage')
+    rule_rates = newfields.One2many(
+        'commission.rule.rate', 'commission_rule_id', 'Rates')
+    rule_conditions = newfields.One2many(
+        'commission.rule.condition', 'commission_rule_id', 'Conditions')
+    active = newfields.Boolean('Active', default=True)
+    sale_team_ids = newfields.One2many(
+        'sale.team', 'commission_rule_id', 'Teams')
+    salesperson_ids = newfields.One2many(
+        'res.users', 'commission_rule_id', 'Salesperson')
+    
 
 
-class commission_rule_rate(osv.osv):
+class commission_rule_rate(models.Model):
 
     _name = "commission.rule.rate"
     _description = "Commission Rule Rate"
-    _columns = {
-        'commission_rule_id': fields.many2one('commission.rule', 'Commission Rule'),
-        'amount_over': fields.float('Amount Over', required=True),
-        'amount_upto': fields.float('Amount Up-To', required=True),
-        'percent_commission': fields.float('Commission (%)', required=True),
-    }
+    
+    commission_rule_id = newfields.Many2one(
+        'commission.rule', 'Commission Rule')
+    amount_over = newfields.Float('Amount Over', required=True)
+    amount_upto = newfields.Float('Amount Up-To', required=True)
+    percent_commission = newfields.Float('Commission (%)', required=True)
+    
     _order = 'id'
-
-commission_rule_rate()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

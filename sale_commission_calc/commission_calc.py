@@ -357,6 +357,8 @@ class commission_worksheet(osv.osv):
                 'commission.worksheet.line': (_get_worksheet, ['done', 'force', 'adjust_amt', 'commission_state'], 20),
             },),
         # Other Info
+        
+        
         'commission_rule_id': fields.function(_get_other_info, type='many2one', relation='commission.rule', string='Applied Commission',
             store=False, multi='other_info'),
         'last_pay_date_rule': fields.function(_get_other_info, type='selection', selection=LAST_PAY_DATE_RULE, string='Last Pay Date Rule',
@@ -369,6 +371,7 @@ class commission_worksheet(osv.osv):
             store=False, multi='other_info'),
         'buffer_days': fields.function(_get_other_info, type='integer', relation='commission.rule', string='Buffer Days',
             store=False, multi='other_info'),
+
     }
     _defaults = {
         'state': 'draft',
